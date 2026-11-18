@@ -1,0 +1,20 @@
+package farm.sensor;
+
+import farm.common.SensorType;
+
+import java.util.Locale;
+
+/** F39 - Một lần đọc của một cảm biến: giá trị đã quy đổi, giá trị thô ADC (nếu có) và trạng thái. */
+public record Reading(SensorType type, double value, int raw, String status) {
+
+    public boolean ok() { return "OK".equals(status); }
+
+    public String toJson() {
+        StringBuilder b = new StringBuilder("{\"sensor\":\"").append(type.key).append("\",");
+        if (ok()) b.append("\"value\":").append(String.format(Locale.ROOT, "%.2f", value));
+        else b.append("\"value\":null");
+        b.append(",\"unit\":\"").append(type.unit).append("\"");
+        if (raw >= 0) b.append(",\"raw\":").append(raw);
+        return b.append(",\"status\":\"").append(status).append("\"}").toString();
+    }
+}

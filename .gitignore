@@ -1,4 +1,12 @@
 
 .env
+!.env.example
+
 # Bỏ qua dữ liệu giả lập
 src/mocks/
+
+# Local dependencies and generated build/runtime data
+node_modules/
+dist/
+out/
+data/

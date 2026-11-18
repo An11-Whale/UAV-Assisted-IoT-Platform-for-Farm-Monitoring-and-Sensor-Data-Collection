@@ -30,6 +30,35 @@ The platform supports offline data storage and automatic synchronization to ensu
 
 Enable farm managers to monitor environmental conditions, detect abnormal values, and make data-driven decisions without manually visiting individual sensor devices.
 
+## Integrated Demo (farm-sim + dashboard)
+
+`src/farm-sim` simulates the sensor nodes, the UAV gateway (HMAC-authenticated collection, local store-and-forward buffer)
+and a mock ingestion server. The server also exposes the `/api/v1/sensors/...` endpoints the dashboard consumes, so the
+whole chain can be run end to end without the Spring Boot backend:
+
+```bash
+sh scripts/run-demo.sh      # Windows: scripts\run-demo.bat   (needs JDK 17+ and Node 20+)
+# then open http://localhost:5173
+```
+
+See `src/farm-sim/README.md` for the data contract and field mappings.
+
+### LQ work package: implementation and handoff
+
+The LQ-assigned work package now includes the durable offline queue, explicit connectivity state,
+bounded retry with jitter, external gateway/node configuration, random per-node HMAC keys, configurable
+thresholds, timeout/low-battery/anomaly detection, persistent alert/audit APIs, and a durable SMTP outbox.
+
+- Vietnamese task-by-task workflow and team contribution: [`docs/LQ-task-completion-guide.md`](docs/LQ-task-completion-guide.md)
+- Individual Jira-ready files for all 23 LQ tasks: [`docs/tasks/LQ/README.md`](docs/tasks/LQ/README.md)
+- Installation and verification: [`docs/installation-manual.md`](docs/installation-manual.md)
+- Deployment diagram: [`docs/deployment/deployment-diagram.md`](docs/deployment/deployment-diagram.md)
+- Sensor–gateway protocol: [`docs/protocol/sensor-gateway-protocol.md`](docs/protocol/sensor-gateway-protocol.md)
+
+On Windows, run `scripts\check-environment.ps1`, then `src\farm-sim\build.ps1` and
+`java -cp src\farm-sim\out farm.tests.TestRunner`. Runtime secrets and queue/alert data live under
+`src/farm-sim/data/` and are intentionally excluded from Git.
+
 ---
 
 ## 2. Problems and Solutions

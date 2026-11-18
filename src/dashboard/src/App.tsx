@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
-import { sensorService } from './services/sensorService';
-import type { SensorNode } from './types/sensor';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { sensorService, type DataSource } from './services/sensorService';
+import type { SensorNode, MetricHistoryPoint } from './types/sensor';
 import { 
   Plane, 
   Search, 
@@ -43,10 +43,22 @@ const METRIC_CONFIGS = {
 
 type MetricKey = keyof typeof METRIC_CONFIGS;
 
+function stableUnitInterval(seed: string): number {
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) / 4294967295;
+}
+
 export default function App() {
   const [sensors, setSensors] = useState<SensorNode[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
+  const [dataSource, setDataSource] = useState<DataSource>('mock');
+  // Lịch sử thật từ backend, gắn kèm khóa (sensor|metric|range) để không hiện nhầm dữ liệu của lựa chọn cũ
+  const [liveHistory, setLiveHistory] = useState<{ key: string; data: MetricHistoryPoint[] | null }>({ key: '', data: null });
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedZone, setSelectedZone] = useState('ALL');
@@ -56,26 +68,45 @@ export default function App() {
   const [timeRange, setTimeRange] = useState<'24h' | '7d'>('24h');
 
   // Hàm tải dữ liệu cảm biến từ Service (Ngày 8-9)
-  const fetchSensorsData = async () => {
+  const fetchSensorsData = useCallback(async () => {
     setIsLoading(true);
     setIsError(false);
     try {
-      const data = await sensorService.getLatestSensors();
+      const { sensors: data, source } = await sensorService.getLatestSensors();
       setSensors(data);
-      if (data.length > 0 && !selectedSensor) {
-        setSelectedSensor(data[0]);
-      }
-    } catch (err) {
+      setDataSource(source);
+      // Chọn lại cảm biến theo id để thấy số liệu mới sau mỗi lần làm mới
+      setSelectedSensor(prev => data.find(s => s.id === prev?.id) ?? data[0] ?? null);
+    } catch {
       setIsError(true);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // Tự động tải khi mở ứng dụng
   useEffect(() => {
-    fetchSensorsData();
-  }, []);
+    const timer = window.setTimeout(() => {
+      void fetchSensorsData();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [fetchSensorsData]);
+
+  // Tải lịch sử thật của cảm biến/chỉ số/khoảng thời gian đang chọn
+  const historyKey = `${selectedSensor?.id ?? ''}|${selectedMetric}|${timeRange}`;
+  useEffect(() => {
+    const id = selectedSensor?.id;
+    if (!id || dataSource !== 'live') return;
+    let cancelled = false;
+    sensorService.getHistory(id, selectedMetric, timeRange).then(data => {
+      if (!cancelled) setLiveHistory({ key: historyKey, data });
+    });
+    return () => { cancelled = true; };
+  }, [selectedSensor?.id, selectedMetric, timeRange, dataSource, historyKey]);
+
+  // Lần UAV đồng bộ gần nhất trong toàn bộ cảm biến
+  const latestSync = sensors.reduce<string | null>(
+    (acc, s) => (s.lastSyncAt && (!acc || s.lastSyncAt > acc) ? s.lastSyncAt : acc), null);
 
   // Thống kê nhanh
   const total = sensors.length;
@@ -95,22 +126,27 @@ export default function App() {
   const currentMetric = METRIC_CONFIGS[selectedMetric];
 
   // Dữ liệu biểu đồ theo thời gian
-  const chartData = useMemo(() => {
+  const fallbackChartData = useMemo(() => {
     if (timeRange === '24h') {
       const hours = ['06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '00:00', '03:00', '07:15'];
       return hours.map(h => {
-        let base = selectedMetric === 'soilMoisture' ? 58 : selectedMetric === 'airTemperature' ? 26 : selectedMetric === 'airHumidity' ? 75 : selectedMetric === 'lightIntensity' ? 28000 : selectedMetric === 'ph' ? 6.3 : 16.5;
-        const jitter = (Math.random() - 0.5) * (base * 0.2);
+        const base = selectedMetric === 'soilMoisture' ? 58 : selectedMetric === 'airTemperature' ? 26 : selectedMetric === 'airHumidity' ? 75 : selectedMetric === 'lightIntensity' ? 28000 : selectedMetric === 'ph' ? 6.3 : 16.5;
+        const jitter = (stableUnitInterval(`${selectedMetric}:${timeRange}:${h}`) - 0.5) * (base * 0.2);
         return { timestamp: h, value: Number((base + jitter).toFixed(1)) };
       });
     }
     const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Hôm nay'];
     return days.map(d => {
-      let base = selectedMetric === 'soilMoisture' ? 60 : selectedMetric === 'airTemperature' ? 25 : 70;
-      const jitter = (Math.random() - 0.5) * (base * 0.15);
+      const base = selectedMetric === 'soilMoisture' ? 60 : selectedMetric === 'airTemperature' ? 25 : 70;
+      const jitter = (stableUnitInterval(`${selectedMetric}:${timeRange}:${d}`) - 0.5) * (base * 0.15);
       return { timestamp: d, value: Number((base + jitter).toFixed(1)) };
     });
   }, [selectedMetric, timeRange]);
+
+  // Có lịch sử thật thì dùng; nếu không (mock / cảm biến backend không biết) dùng dữ liệu minh họa
+  const chartData = dataSource === 'live' && liveHistory.key === historyKey && liveHistory.data
+    ? liveHistory.data
+    : fallbackChartData;
 
   return (
     <div className="min-h-screen bg-slate-100/70 text-slate-800 font-sans flex flex-col">
@@ -144,9 +180,12 @@ export default function App() {
             <span>Khu nông nghiệp CNC #01</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200/80 rounded-lg text-emerald-800">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>UAV đồng bộ gần nhất: <b>07:45</b></span>
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${dataSource === 'live' ? 'bg-emerald-50 border-emerald-200/80 text-emerald-800' : 'bg-amber-50 border-amber-200/80 text-amber-800'}`}>
+            <span className={`w-2 h-2 rounded-full animate-pulse ${dataSource === 'live' ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+            <span>
+              {dataSource === 'live' ? 'Dữ liệu thật (farm-sim)' : 'Dữ liệu mẫu (chưa có backend)'}
+              {' · '}UAV đồng bộ gần nhất: <b>{latestSync ? new Date(latestSync).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '--'}</b>
+            </span>
           </div>
         </div>
       </header>
@@ -537,7 +576,7 @@ export default function App() {
                           <YAxis domain={currentMetric.domain} tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
                           <Tooltip 
                             contentStyle={{ backgroundColor: '#0f172a', borderRadius: '6px', border: 'none', color: '#fff', fontSize: '11px' }}
-                            formatter={(val: any) => [`${val} ${currentMetric.unit}`, currentMetric.label]}
+                            formatter={(val) => [`${val} ${currentMetric.unit}`, currentMetric.label]}
                           />
                           <ReferenceLine y={currentMetric.max} stroke="#ef4444" strokeDasharray="3 3" label={{ value: `Max: ${currentMetric.max}`, fill: '#ef4444', fontSize: 8, position: 'insideTopRight' }} />
                           <ReferenceLine y={currentMetric.min} stroke="#f59e0b" strokeDasharray="3 3" label={{ value: `Min: ${currentMetric.min}`, fill: '#f59e0b', fontSize: 8, position: 'insideBottomRight' }} />

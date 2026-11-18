@@ -82,6 +82,15 @@ interface HistoryChartProps {
   sensorName: string;
 }
 
+function stableUnitInterval(seed: string): number {
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) / 4294967295;
+}
+
 export function HistoryChart({ sensorName }: HistoryChartProps) {
   const [selectedMetric, setSelectedMetric] = useState<MetricKey>('soilMoisture');
   const [timeRange, setTimeRange] = useState<TimeRange>('24h');
@@ -100,7 +109,7 @@ export function HistoryChart({ sensorName }: HistoryChartProps) {
         if (selectedMetric === 'ph') baseVal = 6.3;
         if (selectedMetric === 'waterLevel') baseVal = 16.5;
 
-        const jitter = (Math.random() - 0.5) * (baseVal * 0.25);
+        const jitter = (stableUnitInterval(`${selectedMetric}:${timeRange}:${h}`) - 0.5) * (baseVal * 0.25);
         return {
           timestamp: h,
           value: Number((baseVal + jitter).toFixed(1))
@@ -119,7 +128,7 @@ export function HistoryChart({ sensorName }: HistoryChartProps) {
         if (selectedMetric === 'ph') baseVal = 6.4;
         if (selectedMetric === 'waterLevel') baseVal = 17.0;
 
-        const jitter = (Math.random() - 0.5) * (baseVal * 0.2);
+        const jitter = (stableUnitInterval(`${selectedMetric}:${timeRange}:${d}`) - 0.5) * (baseVal * 0.2);
         return {
           timestamp: d,
           value: Number((baseVal + jitter).toFixed(1))
@@ -137,7 +146,7 @@ export function HistoryChart({ sensorName }: HistoryChartProps) {
       if (selectedMetric === 'ph') baseVal = 6.2;
       if (selectedMetric === 'waterLevel') baseVal = 15.5;
 
-      const jitter = (Math.random() - 0.5) * (baseVal * 0.15);
+      const jitter = (stableUnitInterval(`${selectedMetric}:${timeRange}:${w}`) - 0.5) * (baseVal * 0.15);
       return {
         timestamp: w,
         value: Number((baseVal + jitter).toFixed(1))
@@ -242,7 +251,7 @@ export function HistoryChart({ sensorName }: HistoryChartProps) {
             <YAxis domain={currentConfig.domain} tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} />
             <Tooltip 
               contentStyle={{ backgroundColor: '#0f172a', borderRadius: '6px', border: 'none', color: '#fff', fontSize: '10px' }}
-              formatter={(value: any) => [`${value} ${currentConfig.unit}`, currentConfig.label]}
+              formatter={(value) => [`${value} ${currentConfig.unit}`, currentConfig.label]}
             />
             <ReferenceLine 
               y={currentConfig.maxThresh} 
