@@ -1,5 +1,7 @@
 # Sơ đồ triển khai hệ thống UAV–IoT
 
+> Mô tả vị trí triển khai, ranh giới mạng và kết nối giữa Sensor Node, UAV Gateway, Backend và Dashboard.
+
 ## 1. Mục đích và phạm vi
 
 Tài liệu này là bằng chứng cho **SCRUM-19 / F20 – Create Deployment Diagram**. Sơ đồ phân biệt rõ hai mức:

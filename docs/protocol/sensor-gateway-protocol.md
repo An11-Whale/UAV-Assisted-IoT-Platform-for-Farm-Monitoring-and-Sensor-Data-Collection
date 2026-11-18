@@ -1,5 +1,7 @@
 # Sensor–Gateway Application Protocol v1
 
+> Đặc tả discovery, xác thực, đóng gói và truyền dữ liệu giữa Sensor Node với UAV Gateway.
+
 ## 1. Mục tiêu
 
 Tài liệu này là đặc tả cho **SCRUM-29 / F23 – Design Sensor–Gateway Communication Protocol** và là hợp đồng chung giữa sensor node, UAV gateway và nhóm backend. Protocol bảo đảm:
