@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * F93 - Email notification có outbox bền vững. Alert luôn được tạo trước;
- * lỗi SMTP chỉ giữ mail trong outbox để lần sau retry, không làm hỏng ingestion.
+ * Durable SMTP notification outbox with retry scheduling.
+ * Alert persistence completes before delivery, so an SMTP failure keeps mail pending without failing ingestion.
  */
 public final class EmailNotifier {
     private static final class Mail {

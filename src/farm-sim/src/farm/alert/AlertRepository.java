@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/** Append-only event store cho F90; khởi động lại vẫn giữ alert và audit trail. */
+/**
+ * Append-only alert event store that preserves lifecycle history across restarts.
+ * Active conditions are indexed by fingerprint to prevent duplicate open alerts.
+ */
 public final class AlertRepository {
     public record Creation(Alert alert, boolean created) { }
 

@@ -18,7 +18,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-/** F86-F89 - Cấu hình ngưỡng, timeout và pin yếu, lưu ngoài mã nguồn. */
+/**
+ * Persistent alert policy for global and per-node metric thresholds, stale-data timeout and low battery.
+ * Runtime updates are validated, saved atomically and appended to an audit log.
+ */
 public final class AlertPolicy {
     public record Rule(double min, double max) {
         public Rule {

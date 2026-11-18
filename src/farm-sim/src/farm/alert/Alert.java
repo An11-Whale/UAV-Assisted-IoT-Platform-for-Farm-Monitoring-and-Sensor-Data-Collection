@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-/** F90 - Bản ghi cảnh báo cùng lịch sử xử lý/audit. */
+/**
+ * Alert domain model containing the detected condition, lifecycle status and immutable audit history.
+ * Instances can be serialized for the alert API and reconstructed by the repository event log.
+ */
 public final class Alert {
     public record Event(Instant at, String action, String actor, String note) { }
 

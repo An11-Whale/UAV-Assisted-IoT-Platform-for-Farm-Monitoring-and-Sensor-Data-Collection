@@ -9,7 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** F87-F90 - Phát hiện timeout/pin yếu/giá trị bất thường và tạo alert chống trùng. */
+/**
+ * Evaluates packets for stale data, low battery, sensor read failures and threshold violations.
+ * Conditions are deduplicated through {@link AlertRepository} and forwarded to the email outbox.
+ */
 public final class AlertEngine {
     private static final ZoneId ICT = ZoneId.of("Asia/Ho_Chi_Minh");
     private final AlertPolicy policy;
