@@ -23,7 +23,11 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/** F43 - Danh sách node đã được cấp phép (provision) cùng khóa bí mật của từng node. */
+/**
+ * Provisions and protects the per-node HMAC secrets used for sensor authentication (F43).
+ * Runtime keys can be loaded from a properties file or securely generated and persisted;
+ * callers only receive defensive copies of stored key material.
+ */
 public class KeyStore {
     private static final Pattern NODE_ID = Pattern.compile("^NODE-\\d{3}$");
     private static final int GENERATED_KEY_BYTES = 32;

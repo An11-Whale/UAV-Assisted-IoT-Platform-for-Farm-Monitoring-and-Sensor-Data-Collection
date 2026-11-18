@@ -5,7 +5,11 @@ import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.DoubleSupplier;
 
-/** F52 - Exponential backoff có giới hạn và jitter để nhiều gateway không retry cùng lúc. */
+/**
+ * Calculates capped exponential-backoff delays with jitter for failed uploads (F52).
+ * The policy also derives the next permitted attempt time, preventing synchronized retry
+ * storms when multiple gateways reconnect together.
+ */
 public final class RetryPolicy {
     private final Duration initialDelay;
     private final Duration maxDelay;

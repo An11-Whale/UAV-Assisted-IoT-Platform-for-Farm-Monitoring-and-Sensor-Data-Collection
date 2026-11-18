@@ -19,8 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * F50-F52 - Store-and-forward uploader: theo dõi kết nối, retry có backoff và
- * chuyển record bị backend từ chối sang dead-letter thay vì xóa im lặng.
+ * Synchronizes queued gateway records to the backend in bounded batches (F50-F52).
+ *
+ * <p>The uploader combines connectivity tracking, timeout handling and exponential retry.
+ * Accepted or duplicate records are acknowledged, backend-rejected records are moved to a
+ * durable dead-letter store, and ambiguous failures remain queued for safe redelivery.</p>
  */
 public class Uploader {
     private static final int BATCH = 20;

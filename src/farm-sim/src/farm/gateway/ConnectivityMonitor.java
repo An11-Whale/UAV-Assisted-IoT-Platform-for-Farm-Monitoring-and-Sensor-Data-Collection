@@ -4,12 +4,11 @@ import java.time.Clock;
 import java.time.Instant;
 
 /**
- * F51 - Theo dõi trạng thái kết nối nhìn từ tiến trình đồng bộ của gateway.
+ * Records the gateway's effective backend connectivity from real upload outcomes (F51).
  *
- * <p>ONLINE nghĩa là API đã chấp nhận lần đồng bộ gần nhất. DEGRADED nghĩa là
- * gateway vẫn nhận được HTTP response nhưng API đang từ chối/lỗi. OFFLINE nghĩa
- * là không thiết lập được kết nối. Lớp này không tự tạo traffic kiểm tra mạng;
- * {@link Uploader} cập nhật trạng thái từ kết quả thật của mỗi lần upload.</p>
+ * <p>It exposes immutable snapshots for status reporting without generating separate
+ * probe traffic: {@link Uploader} records successful responses, HTTP failures, network
+ * failures and local processing errors after each synchronization attempt.</p>
  */
 public final class ConnectivityMonitor {
     public enum State { UNKNOWN, ONLINE, DEGRADED, OFFLINE }

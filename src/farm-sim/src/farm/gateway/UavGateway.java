@@ -2,7 +2,11 @@ package farm.gateway;
 
 import java.util.List;
 
-/** F44 - UAV Mobile Gateway: bay theo danh sách waypoint (mét, hệ tọa độ phẳng quanh điểm cất cánh). */
+/**
+ * Simulates the UAV-mounted mobile gateway moving through a waypoint mission (F44).
+ * Positions are maintained in local metres for radio-range calculations and converted to
+ * latitude/longitude when collection records need geographic metadata.
+ */
 public class UavGateway {
     private static final double LAT0 = 10.7769;     // gốc toạ độ (TP.HCM) để quy ra lat/lon
     private static final double LON0 = 106.7009;

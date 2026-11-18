@@ -15,8 +15,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * F48 - Local Data Storage: hàng đợi bền vững (JSON Lines) cho cơ chế store-and-forward.
- * Mỗi dòng = 1 bản ghi đã thu. Mất điện/khởi động lại vẫn còn dữ liệu; đầy thì bỏ bản ghi cũ nhất.
+ * Durable JSON Lines queue for gateway store-and-forward and dead-letter data (F48/F50).
+ *
+ * <p>Updates are written through a flushed temporary file and atomic replacement so data
+ * survives restarts. The normal queue can discard its oldest entry at capacity, while the
+ * strict append mode used for dead letters refuses overflow instead of losing evidence.</p>
  */
 public class LocalStore {
     private static final int MOVE_ATTEMPTS = 8;

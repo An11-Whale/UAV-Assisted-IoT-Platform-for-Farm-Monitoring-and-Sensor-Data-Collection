@@ -17,8 +17,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * F45 - Gateway Data Collection. Mỗi tick: phát hiện node (F42) -> gửi yêu cầu kèm nonce ->
- * nhận gói -> xác thực (F43: chữ ký, nonce, seq, lệch giờ) -> lưu cục bộ (F48).
+ * Orchestrates the authenticated sensor-to-gateway collection pipeline (F42-F45, F48).
+ *
+ * <p>For every UAV position it discovers nearby nodes, issues a nonce-bound request,
+ * verifies identity, HMAC, sequence and clock skew, then persists accepted records in
+ * the durable local queue. Rejected and lost packets are counted separately.</p>
  */
 public class DataCollector {
     private static final long MAX_SKEW_SEC = 30;
