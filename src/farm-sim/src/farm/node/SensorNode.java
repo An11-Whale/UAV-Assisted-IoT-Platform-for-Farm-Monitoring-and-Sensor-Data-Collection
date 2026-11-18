@@ -8,7 +8,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Một node cảm biến ngoài đồng: gồm nhiều cảm biến, có định danh, khóa bí mật, vị trí cố định. */
+/**
+ * Represents a provisioned field sensor node with fixed position and multiple sensors.
+ * It broadcasts identity/capability beacons and answers nonce-bound collection requests
+ * with fresh readings, battery state, monotonic sequence and an authenticated packet.
+ */
 public class SensorNode {
     private final NodeIdentity identity;
     private final byte[] key;

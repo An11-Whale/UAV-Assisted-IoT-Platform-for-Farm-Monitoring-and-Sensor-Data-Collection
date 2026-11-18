@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Môi trường vô tuyến giả lập (thay cho LoRa/BLE/Wi-Fi): chỉ nghe/trả lời được khi trong tầm,
- * có tỉ lệ mất gói. Đổi sang UDP/MQTT thật chỉ cần viết lại lớp này.
+ * Deterministic radio abstraction for sensor discovery and collection requests (F42/F45).
+ * It models range, signal strength and packet loss in place of LoRa, BLE or Wi-Fi, keeping
+ * transport behavior isolated so a real UDP/MQTT adapter can replace the simulator later.
  */
 public class RadioMedium {
     public record Heard(String beaconJson, double rssi) {}

@@ -2,7 +2,10 @@ package farm.node;
 
 import java.util.regex.Pattern;
 
-/** F41 - Định danh node: nodeId duy nhất dạng NODE-001, kèm model phần cứng, firmware và farm. */
+/**
+ * Immutable provisioned identity for a sensor node (F41), including its validated
+ * {@code NODE-001} identifier, hardware model, firmware version and farm assignment.
+ */
 public record NodeIdentity(String nodeId, String model, String firmware, String farmId) {
     private static final Pattern ID = Pattern.compile("^NODE-\\d{3}$");
 

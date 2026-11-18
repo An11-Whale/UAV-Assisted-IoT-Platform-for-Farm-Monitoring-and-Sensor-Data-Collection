@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * F40 - Đóng gói dữ liệu cảm biến thành gói JSON v1 rồi ký (F43).
- * {"v":1,"nodeId":..,"seq":..,"nonce":..,"ts":..,"battery":..,"readings":[..],"sig":".."}
+ * Builds the versioned sensor-data envelope and attaches its HMAC signature (F40/F43).
+ * The canonical JSON contains node identity, sequence, request nonce, timestamp, battery
+ * level and readings before the final {@code sig} field is added.
  */
 public final class PacketBuilder {
     private PacketBuilder() {}
