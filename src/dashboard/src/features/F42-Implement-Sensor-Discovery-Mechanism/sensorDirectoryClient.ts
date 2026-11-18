@@ -1,3 +1,4 @@
+/** Dashboard adapter for reading the backend sensor directory. */
 import { sensorService } from '../../services/sensorService';
 import type { SensorNode } from '../../types/sensor';
 

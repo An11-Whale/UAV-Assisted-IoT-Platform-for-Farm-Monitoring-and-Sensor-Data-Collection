@@ -1,3 +1,4 @@
+/** Reusable chart for viewing a sensor metric over selectable time ranges. */
 import { useState, useMemo } from 'react';
 import { 
   AreaChart, 

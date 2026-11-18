@@ -1,3 +1,4 @@
+/** Main monitoring screen: sensor status, filters, live measurements and history charts. */
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { sensorService, type DataSource } from './services/sensorService';
 import type { SensorNode, MetricHistoryPoint } from './types/sensor';

@@ -1,3 +1,4 @@
+/** API client for latest sensor values and metric history, with mock-data fallback. */
 import type { SensorNode, MetricHistoryPoint } from '../types/sensor';
 import { MOCK_SENSORS } from '../mocks/mockSensors';
 

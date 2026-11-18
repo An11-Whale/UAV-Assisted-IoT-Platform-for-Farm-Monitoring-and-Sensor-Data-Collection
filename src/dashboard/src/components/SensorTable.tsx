@@ -1,3 +1,4 @@
+/** Searchable and sortable sensor directory used by the monitoring dashboard. */
 import { useState } from 'react';
 import type { SensorNode } from '../types/sensor';
 import { 
