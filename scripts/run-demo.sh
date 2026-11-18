@@ -1,4 +1,5 @@
 #!/bin/sh
+# POSIX launcher for the farm simulator and React monitoring dashboard.
 # Demo tích hợp: farm-sim (cảm biến -> node -> UAV gateway -> server :8080) + dashboard React (:5173)
 # Cần: JDK 17+, Node 20+.  Chạy từ thư mục gốc của repo:  sh scripts/run-demo.sh
 set -e

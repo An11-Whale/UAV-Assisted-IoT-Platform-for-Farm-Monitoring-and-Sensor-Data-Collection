@@ -1,3 +1,7 @@
+<#
+.SYNOPSIS
+Validates the JDK, Node.js and npm versions required by the integrated farm demo.
+#>
 [CmdletBinding()]
 param()
 

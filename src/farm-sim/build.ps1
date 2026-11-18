@@ -1,3 +1,7 @@
+<#
+.SYNOPSIS
+Discovers a compatible JDK and compiles every farm simulator Java source file.
+#>
 [CmdletBinding()]
 param()
 

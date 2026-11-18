@@ -1,3 +1,7 @@
+<#
+.SYNOPSIS
+Builds when necessary, selects a compatible Java runtime and starts the farm simulator.
+#>
 [CmdletBinding(PositionalBinding = $false)]
 param(
     [Parameter(ValueFromRemainingArguments = $true)]

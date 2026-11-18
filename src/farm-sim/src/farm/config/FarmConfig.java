@@ -19,9 +19,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * F9/F116 - Cấu hình gateway và sensor node từ file properties, không hardcode secret.
- * Đường dẫn tương đối được resolve từ {@code paths.base-dir}; base-dir lại tương đối
- * với thư mục chứa file cấu hình.
+ * Loads and validates gateway topology, sensor nodes, storage, backend, radio and retry settings.
+ * Secrets remain outside source control; relative paths resolve from {@code paths.base-dir}, which is
+ * itself resolved against the configuration file directory.
  */
 public final class FarmConfig {
     private static final Pattern GATEWAY_ID = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$");

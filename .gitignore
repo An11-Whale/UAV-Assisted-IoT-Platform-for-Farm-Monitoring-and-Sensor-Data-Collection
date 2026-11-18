@@ -1,4 +1,4 @@
-
+# Repository-wide exclusions for local secrets, dependencies and generated runtime artifacts.
 .env
 !.env.example
 

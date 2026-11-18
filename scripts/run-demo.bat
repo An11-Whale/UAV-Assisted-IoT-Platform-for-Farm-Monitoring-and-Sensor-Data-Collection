@@ -1,4 +1,5 @@
 @echo off
+REM Windows launcher for the farm simulator and React monitoring dashboard.
 REM Demo tich hop: farm-sim (server :8080) + dashboard React (:5173). Can JDK 17+ va Node 20+.
 REM Chay tu thu muc goc repo:  scripts\run-demo.bat
 set "ROOT=%~dp0.."
