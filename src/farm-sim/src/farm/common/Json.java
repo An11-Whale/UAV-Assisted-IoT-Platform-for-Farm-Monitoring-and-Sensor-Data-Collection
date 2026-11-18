@@ -5,7 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** JSON parser tối giản (không cần thư viện ngoài). Object->Map, Array->List, số->Double. */
+/**
+ * Dependency-free JSON parser and string escaper used by packets, persistence files and HTTP responses.
+ * Objects map to {@link Map}, arrays to {@link List}, and numeric values to {@link Double}.
+ */
 public final class Json {
     private final String s;
     private int i = 0;

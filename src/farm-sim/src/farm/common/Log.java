@@ -3,7 +3,10 @@ package farm.common;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-/** Log đơn giản, in theo giờ mô phỏng (ICT). Chỉ dùng ASCII để không lỗi font trên console Windows. */
+/**
+ * Thread-safe console logger that timestamps events with the shared simulation clock in ICT.
+ * Output remains ASCII-compatible for consistent display in Windows terminals.
+ */
 public final class Log {
     private static volatile SimClock clock;
     private static final DateTimeFormatter F =

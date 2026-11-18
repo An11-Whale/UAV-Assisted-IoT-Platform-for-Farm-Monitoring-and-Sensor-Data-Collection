@@ -6,7 +6,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
 
-/** F43 - Xác thực: HMAC-SHA256 với khóa chia sẻ (pre-shared key) cấp cho từng node. */
+/**
+ * Packet authentication helpers using a per-node pre-shared key and HMAC-SHA256.
+ * Verification uses a constant-time comparison and signed JSON can be attached or split without dependencies.
+ */
 public final class Auth {
     private static final String ALG = "HmacSHA256";
     private static final String SIG_MARK = ",\"sig\":\"";

@@ -1,6 +1,9 @@
 package farm.common;
 
-/** Danh sách loại cảm biến + đơn vị + khoảng giá trị hợp lệ (dùng chung cho cảm biến và validator F47). */
+/**
+ * Canonical sensor metric registry shared by simulated devices and ingestion validation.
+ * Each metric defines its wire key, engineering unit and physically valid range.
+ */
 public enum SensorType {
     SOIL_MOISTURE("soil_moisture", "%", 0, 100),
     TEMPERATURE("temperature", "C", -40, 80),

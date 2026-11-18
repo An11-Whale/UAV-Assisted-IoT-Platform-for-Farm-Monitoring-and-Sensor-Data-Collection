@@ -2,7 +2,7 @@ package farm.common;
 
 import java.time.Instant;
 
-/** Đồng hồ mô phỏng: cho phép "tua nhanh" thời gian để thấy biến đổi theo ngày/đêm. */
+/** Adjustable, thread-safe clock used to accelerate missions and day/night sensor behavior in the simulator. */
 public class SimClock {
     private Instant now;
 
