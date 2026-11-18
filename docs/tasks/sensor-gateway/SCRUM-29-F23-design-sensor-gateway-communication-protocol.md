@@ -4,7 +4,7 @@
 
 | Mục | Giá trị |
 |---|---|
-| Người phụ trách | LQ |
+| Người phụ trách | Quang Lực |
 | Trạng thái trên board | Done |
 | Trạng thái đề xuất khi nộp | **Done – cần H review contract** |
 | Loại bàn giao | Protocol specification v1 + implementation evidence |

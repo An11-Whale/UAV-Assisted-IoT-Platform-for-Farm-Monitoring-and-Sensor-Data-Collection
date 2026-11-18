@@ -4,7 +4,7 @@
 
 | Mục | Giá trị |
 |---|---|
-| Người phụ trách | LQ |
+| Người phụ trách | Quang Lực |
 | Trạng thái trên board | To Do |
 | Trạng thái đề xuất khi nộp | **Ready for Review** |
 | Loại bàn giao | Sensor prototype bằng simulator Java |

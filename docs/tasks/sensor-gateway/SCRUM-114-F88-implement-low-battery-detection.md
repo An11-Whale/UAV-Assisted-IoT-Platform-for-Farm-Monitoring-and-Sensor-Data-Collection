@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Người phụ trách | LQ |
+| Người phụ trách | Quang Lực |
 | Trạng thái trên board trong ảnh | To Do |
 | Trạng thái đề xuất khi nộp | **Ready for Review** |
 | Yêu cầu liên quan | FR F09, NFR09 |

@@ -306,7 +306,7 @@ Read policy không cần key trong local demo. Mutation bị khóa an toàn nế
 
 ```powershell
 $env:FARM_ADMIN_KEY = 'generate-a-long-random-value'
-$headers = @{ 'X-Admin-Key'=$env:FARM_ADMIN_KEY; 'X-Actor'='LQ' }
+$headers = @{ 'X-Admin-Key'=$env:FARM_ADMIN_KEY; 'X-Actor'='gateway-operator' }
 $body = '{"metric":"temperature","min":18,"max":32,"nodeId":"NODE-001"}'
 Invoke-RestMethod -Method Patch -Uri http://localhost:8080/api/v1/config/alert-rules `
   -Headers $headers -ContentType application/json -Body $body

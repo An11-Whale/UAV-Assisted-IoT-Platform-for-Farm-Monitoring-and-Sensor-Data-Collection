@@ -6,7 +6,7 @@
 |---|---|
 | Jira | `SCRUM-143` |
 | Feature | `F117 – Prepare Installation Manual` |
-| Người phụ trách | LQ |
+| Người phụ trách | Quang Lực |
 | Board hiện tại | `To Do` |
 | Trạng thái đề xuất khi nộp | **Ready for Review** |
 | Deliverable chính | `docs/installation-manual.md` |
@@ -38,7 +38,7 @@ Cung cấp tài liệu để một thành viên không viết module vẫn có t
 | `scripts/run-demo.bat` / `run-demo.sh` | Chạy demo tích hợp |
 | `src/farm-sim/build.ps1` / `run.ps1` | Build/run Windows, fail-fast và truyền exit code đúng |
 | `.env.example` | Danh sách biến API/admin/SMTP không chứa credential thật |
-| `docs/LQ-task-completion-guide.md` | Test evidence và handoff H/NL |
+| `docs/tasks/sensor-gateway/README.md` | Mục lục và checklist 23 task Sensor/Gateway |
 
 Manual phân biệt rõ:
 

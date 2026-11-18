@@ -1,4 +1,4 @@
-# Hồ sơ nộp thủ công — 23 task LQ
+# Hồ sơ nộp thủ công — 23 task Sensor/Gateway
 
 Thư mục này chứa **một file độc lập cho mỗi task**. Bạn có thể mở đúng file, đính kèm vào Jira hoặc gửi cho nhóm mà không cần cắt nội dung từ báo cáo tổng.
 
@@ -7,7 +7,7 @@ Thư mục này chứa **một file độc lập cho mỗi task**. Bạn có th�
 Sau mỗi bước, đổi ô tương ứng từ `[ ]` thành `[x]`:
 
 - **Đã nộp:** file task, source/PR và bằng chứng test đã gửi cho nhóm hoặc gắn vào Jira.
-- **Đã review:** đúng người phụ thuộc đã xác nhận, ví dụ H review ingestion hoặc NL review Alert API.
+- **Đã review:** đúng người phụ thuộc đã xác nhận, ví dụ backend owner review ingestion hoặc frontend owner review Alert API.
 - **Done:** acceptance checklist đã pass và board đã được chuyển `Done`.
 
 Hai task `SCRUM-19` và `SCRUM-29` đang `Done` trên board cũ, nhưng vẫn nên review artifact mới trước khi đánh dấu ô Done trong bảng này.

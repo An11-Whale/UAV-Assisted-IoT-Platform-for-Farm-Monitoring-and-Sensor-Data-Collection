@@ -6,7 +6,7 @@
 |---|---|
 | Jira | `SCRUM-142` |
 | Feature | `F116 – Configure Gateway and Sensor Nodes` |
-| Người phụ trách | LQ |
+| Người phụ trách | Quang Lực |
 | Board hiện tại | `To Do` |
 | Trạng thái đề xuất khi nộp | **Ready for Review** |
 | Yêu cầu liên quan | F18, F20, NFR03, NFR05, NFR07, NFR08 |

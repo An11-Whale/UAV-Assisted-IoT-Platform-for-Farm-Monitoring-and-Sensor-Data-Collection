@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Người phụ trách | LQ |
+| Người phụ trách | Quang Lực |
 | Trạng thái trên board trong ảnh | To Do |
 | Trạng thái đề xuất khi nộp | **Ready for Review** |
 | Yêu cầu liên quan | FR F08, F09, F10, NFR04 |
@@ -51,7 +51,7 @@ List và đổi trạng thái:
 ```powershell
 $base = 'http://localhost:8080/api/v1'
 $alerts = Invoke-RestMethod "$base/alerts?limit=100"
-$headers = @{ 'X-Admin-Key'=$env:FARM_ADMIN_KEY; 'X-Actor'='LQ' }
+$headers = @{ 'X-Admin-Key'=$env:FARM_ADMIN_KEY; 'X-Actor'='gateway-operator' }
 $id = $alerts[0].id
 $body = '{"status":"ACKNOWLEDGED","note":"Đã kiểm tra hiện trường"}'
 Invoke-RestMethod -Method Patch -Uri "$base/alerts/$id/status" `

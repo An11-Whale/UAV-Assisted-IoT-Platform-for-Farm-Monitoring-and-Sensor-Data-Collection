@@ -4,7 +4,7 @@
 
 | Mục | Giá trị |
 |---|---|
-| Người phụ trách | LQ |
+| Người phụ trách | Quang Lực |
 | Trạng thái trên board | Done |
 | Trạng thái đề xuất khi nộp | **Done – cần nhóm xác nhận artifact mới** |
 | Loại bàn giao | UML-style Deployment Diagram + mô tả triển khai |

@@ -4,7 +4,7 @@
 
 | Thuộc tính | Giá trị |
 |---|---|
-| Người phụ trách | LQ |
+| Người phụ trách | Quang Lực |
 | Trạng thái trên board trong ảnh | To Do |
 | Trạng thái đề xuất khi nộp | **Ready for Review** |
 | Yêu cầu liên quan | FR F09, NFR03, NFR07 |
@@ -50,7 +50,7 @@ cd src\farm-sim
 ```powershell
 $base = 'http://localhost:8080/api/v1'
 Invoke-RestMethod "$base/config/alert-rules"
-$headers = @{ 'X-Admin-Key'=$env:FARM_ADMIN_KEY; 'X-Actor'='LQ' }
+$headers = @{ 'X-Admin-Key'=$env:FARM_ADMIN_KEY; 'X-Actor'='gateway-operator' }
 $body = '{"metric":"temperature","min":18,"max":32,"nodeId":"NODE-001"}'
 Invoke-RestMethod -Method Patch -Uri "$base/config/alert-rules" `
   -Headers $headers -ContentType application/json -Body $body
