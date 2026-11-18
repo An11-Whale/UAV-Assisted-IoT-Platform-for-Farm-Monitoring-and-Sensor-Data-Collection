@@ -1,4 +1,4 @@
-# Farm Sensor + Gateway + Alert Simulator (phần LQ)
+# Farm Sensor, Gateway and Alert Simulator
 
 Giả lập toàn bộ chuỗi: cảm biến -> node -> UAV gateway -> API nhận dữ liệu. Chỉ dùng JDK (17+), không cần thư viện ngoài.
 

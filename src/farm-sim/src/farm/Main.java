@@ -28,7 +28,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
-/** Chạy demo end-to-end các task LQ: sensor -> gateway -> offline/retry -> alert server. */
+/** Runs the end-to-end sensor, gateway, offline synchronization and alert workflow. */
 public class Main {
     public static void main(String[] args) throws Exception {
         String configOption = optionValue(args, "--config");

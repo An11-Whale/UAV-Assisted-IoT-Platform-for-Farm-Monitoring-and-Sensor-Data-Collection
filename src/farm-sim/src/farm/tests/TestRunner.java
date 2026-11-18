@@ -26,7 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Bộ acceptance test Java thuần cho các phần việc LQ. Không dùng JUnit hay network socket.
+ * Pure-Java acceptance tests for gateway storage, authentication and alert behavior.
+ * Does not require JUnit or a network socket.
  *
  * Chạy sau khi compile toàn bộ source:
  *   java -cp out farm.tests.TestRunner
