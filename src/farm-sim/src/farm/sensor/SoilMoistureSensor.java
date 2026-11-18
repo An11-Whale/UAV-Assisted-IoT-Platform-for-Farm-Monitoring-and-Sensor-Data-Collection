@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-/** F36 - Soil Moisture Sensor Prototype (mô phỏng cảm biến điện dung v1.2 nối ADC 12-bit). */
+/** Simulates a capacitive soil-moisture probe connected to a 12-bit ADC. */
 public class SoilMoistureSensor extends SimulatedSensor {
     public static final int DRY = 3000;   // ADC ngoài không khí
     public static final int WET = 1400;   // ADC khi nhúng nước

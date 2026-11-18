@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-/** F38 - Water level sensor: mực nước bể giảm dần, tự "châm nước" khi xuống thấp. */
+/** Simulates a reservoir level that decreases over time and refills below its low point. */
 public class WaterLevelSensor extends SimulatedSensor {
     private double level;
     private Instant last;

@@ -5,7 +5,7 @@ import farm.common.SensorType;
 import java.time.Instant;
 import java.util.List;
 
-/** F38 - pH sensor (mô phỏng đầu dò pH analog): trôi chậm quanh giá trị khởi đầu. */
+/** Simulates an analog pH probe with bounded drift around its configured baseline. */
 public class PhSensor extends SimulatedSensor {
     private final double center;
     private double drift = 0;

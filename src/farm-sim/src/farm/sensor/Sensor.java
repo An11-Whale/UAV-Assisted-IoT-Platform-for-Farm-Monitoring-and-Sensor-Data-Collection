@@ -3,7 +3,7 @@ package farm.sensor;
 import java.time.Instant;
 import java.util.List;
 
-/** Giao diện chung cho mọi cảm biến. Sau này thay bằng driver phần cứng thật chỉ cần implement lại interface này. */
+/** Common sensor contract shared by simulated devices and future hardware drivers. */
 public interface Sensor {
     String name();
 

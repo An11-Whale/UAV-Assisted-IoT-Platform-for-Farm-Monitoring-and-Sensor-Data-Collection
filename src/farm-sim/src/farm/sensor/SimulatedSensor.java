@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.Random;
 import java.util.function.DoubleToIntFunction;
 
-/** Lớp nền cho cảm biến giả lập: lấy nhiều mẫu rồi trung bình (F39), thỉnh thoảng báo lỗi đọc. */
+/** Base implementation for noisy multi-sample sensors with configurable read failures. */
 public abstract class SimulatedSensor implements Sensor {
     private static final int SAMPLES = 5;
     private static final ZoneId ICT = ZoneId.of("Asia/Ho_Chi_Minh");

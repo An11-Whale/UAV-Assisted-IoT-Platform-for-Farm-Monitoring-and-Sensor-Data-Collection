@@ -5,7 +5,7 @@ import farm.common.SensorType;
 import java.time.Instant;
 import java.util.List;
 
-/** F38 - Light sensor (mô phỏng BH1750): sáng theo giờ mặt trời, có mây che ngẫu nhiên. */
+/** Simulates a BH1750 light sensor with daylight cycles and randomized cloud cover. */
 public class LightSensor extends SimulatedSensor {
     public LightSensor(long seed) { super(seed, 0.005); }
 

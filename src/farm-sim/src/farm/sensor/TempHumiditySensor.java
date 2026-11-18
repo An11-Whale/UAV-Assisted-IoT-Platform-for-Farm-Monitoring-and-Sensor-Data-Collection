@@ -5,7 +5,7 @@ import farm.common.SensorType;
 import java.time.Instant;
 import java.util.List;
 
-/** F37 - Temperature and Humidity Sensor Prototype (mô phỏng DHT22: 1 module cho 2 số đo). */
+/** Simulates a DHT22 module that reports temperature and relative humidity together. */
 public class TempHumiditySensor extends SimulatedSensor {
     private final double offset;
 

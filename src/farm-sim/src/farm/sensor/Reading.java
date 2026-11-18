@@ -4,7 +4,7 @@ import farm.common.SensorType;
 
 import java.util.Locale;
 
-/** F39 - Một lần đọc của một cảm biến: giá trị đã quy đổi, giá trị thô ADC (nếu có) và trạng thái. */
+/** Immutable sensor sample containing the converted value, optional raw ADC value and read status. */
 public record Reading(SensorType type, double value, int raw, String status) {
 
     public boolean ok() { return "OK".equals(status); }
