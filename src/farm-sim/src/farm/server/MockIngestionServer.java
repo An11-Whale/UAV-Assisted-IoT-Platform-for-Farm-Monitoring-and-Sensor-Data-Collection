@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * F46 (mock) - Sensor Data Ingestion API dùng để TEST tích hợp khi backend thật (Spring Boot) chưa xong.
+ * Standalone ingestion and dashboard API used for end-to-end testing before the production backend is available.
  *   POST /api/ingest    nhận lô bản ghi từ UAV gateway, validate (F47), chống trùng theo nodeId+seq
  *   GET  /api/readings  trả các số đo đã nhận (lọc ?nodeId=&sensor=&limit=)
  *   GET  /api/v1/sensors/latest, /api/v1/sensors/{id}/history  -> API cho dashboard React (xem DashboardApi)

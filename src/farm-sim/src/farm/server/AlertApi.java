@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** REST API cho F86 (policy) và F90 (alert management). */
+/** Provides authenticated REST operations for alert policies, lifecycle state and history. */
 public final class AlertApi {
     private final AlertPolicy policy;
     private final AlertRepository alerts;

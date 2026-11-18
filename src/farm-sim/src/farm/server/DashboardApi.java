@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
+ * Maps stored farm readings to the live sensor and history endpoints consumed by the React dashboard.
  * Cầu nối farm-sim -> dashboard React (src/dashboard).
  * Dịch dữ liệu gói node (sensor/value/unit) sang mô hình SensorNode mà dashboard dùng:
  *   GET /api/v1/sensors/latest

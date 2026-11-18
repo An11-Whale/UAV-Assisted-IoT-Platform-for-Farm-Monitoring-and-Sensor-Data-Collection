@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/** F47 - Sensor Data Validation: kiểm tra cấu trúc, kiểu dữ liệu, đơn vị, khoảng giá trị, thời gian. */
+/** Validates uploaded sensor records for schema, types, units, ranges and timestamps. */
 public final class SensorDataValidator {
     private static final Duration MAX_FUTURE = Duration.ofMinutes(5);
 
