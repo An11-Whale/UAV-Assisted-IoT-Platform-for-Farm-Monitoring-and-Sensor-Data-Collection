@@ -48,9 +48,6 @@ See `src/farm-sim/README.md` for the data contract and field mappings.
 The assigned work package now includes the durable offline queue, explicit connectivity state,
 bounded retry with jitter, external gateway/node configuration, random per-node HMAC keys, configurable
 thresholds, timeout/low-battery/anomaly detection, persistent alert/audit APIs, and a durable SMTP outbox.
-
-- Vietnamese task-by-task workflow and team contribution: [`docs/LQ-task-completion-guide.md`](docs/LQ-task-completion-guide.md)
-- Individual Jira-ready files for all 23 tasks: [`docs/tasks/LQ/README.md`](docs/tasks/LQ/README.md)
 - Installation and verification: [`docs/installation-manual.md`](docs/installation-manual.md)
 - Deployment diagram: [`docs/deployment/deployment-diagram.md`](docs/deployment/deployment-diagram.md)
 - Sensor–gateway protocol: [`docs/protocol/sensor-gateway-protocol.md`](docs/protocol/sensor-gateway-protocol.md)
