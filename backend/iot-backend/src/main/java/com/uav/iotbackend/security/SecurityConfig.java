@@ -37,11 +37,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/devices").hasAnyRole("ADMIN", "TECHNICIAN")
                 
                 .requestMatchers("/api/v1/readings/**").hasAnyRole("ADMIN", "OPERATOR")
+                // Chỉ có ADMIN mới có quyền quản lý người dùng
+                .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
 
                 // ---- Các request còn lại phải có token ----
                 .anyRequest().authenticated()
-                // Chỉ có ADMIN mới có quyền quản lý người dùng
-                .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
+    
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
