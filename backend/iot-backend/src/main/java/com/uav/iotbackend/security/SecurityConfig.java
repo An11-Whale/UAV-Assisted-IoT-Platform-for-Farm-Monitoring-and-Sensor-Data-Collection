@@ -40,6 +40,8 @@ public class SecurityConfig {
 
                 // ---- Các request còn lại phải có token ----
                 .anyRequest().authenticated()
+                // Chỉ có ADMIN mới có quyền quản lý người dùng
+                .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -57,4 +59,5 @@ public class SecurityConfig {
             throw new UsernameNotFoundException("Hệ thống xác thực qua AuthService");
         };
     }
+    
 }
