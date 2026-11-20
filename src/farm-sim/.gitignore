@@ -1,0 +1,4 @@
+# Java build output and persistent simulator state generated on the local machine.
+out/
+data/
+sources.txt
