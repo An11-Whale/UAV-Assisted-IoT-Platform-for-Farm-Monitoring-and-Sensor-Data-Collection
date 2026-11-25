@@ -31,19 +31,31 @@ public final class AlertEngine {
         registeredAt.putIfAbsent(nodeId, at);
     }
 
-    public synchronized void onPacket(String nodeId, Instant measuredAt, Instant receivedAt, double batteryPct,
+    public void onPacket(String nodeId, Instant measuredAt, Instant receivedAt, double batteryPct,
+                         Map<String, Double> readings, List<String> errorSensors) {
+        onPacket(nodeId, measuredAt, receivedAt, receivedAt, batteryPct, readings, errorSensors);
+    }
+
+    public synchronized void onPacket(String nodeId, Instant measuredAt, Instant gatewayReceivedAt,
+                                      Instant serverReceivedAt, double batteryPct,
                                       Map<String, Double> readings, List<String> errorSensors) {
-        register(nodeId, receivedAt);
-        Instant previous = lastMeasurement.get(nodeId);
-        if (previous == null || measuredAt.isAfter(previous)) lastMeasurement.put(nodeId, measuredAt);
-        clear("DATA_TIMEOUT", nodeId, null, receivedAt);
+        register(nodeId, serverReceivedAt);
+        Instant latest = lastMeasurement.get(nodeId);
+        if (latest == null || measuredAt.isAfter(latest)) {
+            latest = measuredAt;
+            lastMeasurement.put(nodeId, latest);
+        }
+        // The gateway's receipt time may be old when it uploads its offline queue.
+        if (Duration.between(latest, serverReceivedAt).compareTo(policy.staleAfter()) <= 0) {
+            clear("DATA_TIMEOUT", nodeId, null, serverReceivedAt);
+        }
 
         double batteryLimit = policy.lowBatteryPct();
         if (batteryPct < batteryLimit) {
             String severity = batteryPct < batteryLimit / 2.0 ? "CRITICAL" : "WARNING";
             raise("LOW_BATTERY", severity, nodeId, "battery", batteryPct, 0.0, batteryLimit,
-                    String.format("Pin %.1f%% thap hon nguong %.1f%%", batteryPct, batteryLimit), receivedAt);
-        } else clear("LOW_BATTERY", nodeId, "battery", receivedAt);
+                    String.format("Pin %.1f%% thap hon nguong %.1f%%", batteryPct, batteryLimit), gatewayReceivedAt);
+        } else clear("LOW_BATTERY", nodeId, "battery", gatewayReceivedAt);
 
         for (Map.Entry<String, Double> e : readings.entrySet()) {
             String metric = e.getKey();
@@ -56,13 +68,13 @@ public final class AlertEngine {
                 double distance = value < rule.min() ? rule.min() - value : value - rule.max();
                 String severity = distance > span * 0.5 ? "CRITICAL" : "WARNING";
                 raise("ABNORMAL_SENSOR_DATA", severity, nodeId, metric, value, rule.min(), rule.max(),
-                        String.format("%s=%.2f ngoai nguong [%.2f, %.2f]", metric, value, rule.min(), rule.max()), receivedAt);
-            } else clear("ABNORMAL_SENSOR_DATA", nodeId, metric, receivedAt);
-            clear("SENSOR_READ_ERROR", nodeId, metric, receivedAt);
+                        String.format("%s=%.2f ngoai nguong [%.2f, %.2f]", metric, value, rule.min(), rule.max()), gatewayReceivedAt);
+            } else clear("ABNORMAL_SENSOR_DATA", nodeId, metric, gatewayReceivedAt);
+            clear("SENSOR_READ_ERROR", nodeId, metric, gatewayReceivedAt);
         }
         for (String metric : errorSensors) {
             raise("SENSOR_READ_ERROR", "WARNING", nodeId, metric, null, null, null,
-                    "Cam bien " + metric + " bao loi doc du lieu", receivedAt);
+                    "Cam bien " + metric + " bao loi doc du lieu", gatewayReceivedAt);
         }
         safeFlushEmail();
     }

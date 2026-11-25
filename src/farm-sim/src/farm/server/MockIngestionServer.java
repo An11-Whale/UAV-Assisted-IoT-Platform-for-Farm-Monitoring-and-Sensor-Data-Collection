@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpServer;
 import farm.alert.AlertEngine;
 import farm.alert.AlertPolicy;
 import farm.alert.AlertRepository;
+import farm.alert.AlertTimeoutMonitor;
 import farm.alert.EmailNotifier;
 import farm.common.Json;
 import farm.common.Log;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,6 +49,7 @@ public class MockIngestionServer {
     private final AlertRepository alertRepository;
     private final EmailNotifier emailNotifier;
     private final AlertEngine alertEngine;
+    private final AlertTimeoutMonitor timeoutMonitor;
     private final DashboardApi dashboard;
     private final AlertApi alertApi;
     public int accepted = 0;
@@ -61,6 +64,7 @@ public class MockIngestionServer {
         this.alertRepository = new AlertRepository(dataDir.resolve("alerts.jsonl"));
         this.emailNotifier = new EmailNotifier(dataDir.resolve("email-outbox.jsonl"), env);
         this.alertEngine = new AlertEngine(policy, alertRepository, emailNotifier);
+        this.timeoutMonitor = new AlertTimeoutMonitor(alertEngine, Duration.ofSeconds(1));
         this.dashboard = new DashboardApi(policy);
         this.alertApi = new AlertApi(policy, alertRepository, alertEngine, adminKey);
     }
@@ -83,11 +87,13 @@ public class MockIngestionServer {
         s.createContext("/api/health", ex -> reply(ex, 200, "{\"status\":\"UP\"}"));
         s.setExecutor(executor);
         s.start();
+        m.timeoutMonitor.start();
         Log.i("SERVER", "Mock ingestion API dang chay: http://localhost:" + port + "/api/ingest");
         return m;
     }
 
     public void stop() {
+        timeoutMonitor.close();
         try { emailNotifier.flush(); }
         finally {
             srv.stop(0);
@@ -154,13 +160,12 @@ public class MockIngestionServer {
                             Json.str(rd.get("unit")), Json.str(p.get("ts")),
                             Json.num(pos.get("lat")), Json.num(pos.get("lon"))));
                 }
-                Instant rx = null;
-                try { rx = Instant.parse(Json.str(r.get("rxTs"))); } catch (RuntimeException ignored) { }
+                Instant gatewayReceivedAt = Instant.parse(Json.str(r.get("rxTs")));
+                Instant measuredAt = Instant.parse(Json.str(p.get("ts")));
                 Double battery = Json.num(p.get("battery"));
-                dashboard.onPacket(nodeId, Instant.parse(Json.str(p.get("ts"))), rx != null ? rx : now,
-                        battery == null ? 100.0 : battery, okReadings, errorSensors);
-                alertEngine.onPacket(nodeId, Instant.parse(Json.str(p.get("ts"))), rx != null ? rx : now,
-                        battery == null ? 100.0 : battery, okReadings, errorSensors);
+                double batteryPct = battery == null ? 100.0 : battery;
+                dashboard.onPacket(nodeId, measuredAt, gatewayReceivedAt, batteryPct, okReadings, errorSensors);
+                alertEngine.onPacket(nodeId, measuredAt, gatewayReceivedAt, now, batteryPct, okReadings, errorSensors);
                 acc++;
             }
             accepted += acc;
