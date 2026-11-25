@@ -1,6 +1,6 @@
 @echo off
 REM Windows launcher for the farm simulator and React monitoring dashboard.
-REM Demo tich hop: farm-sim (server :8080) + dashboard React (:5173). Can JDK 17+ va Node 20+.
+REM Demo tich hop: farm-sim (server :8080) + dashboard React (:5173). Can JDK 17+ va Node ^20.19, ^22.13 hoac >=24.
 REM Chay tu thu muc goc repo:  scripts\run-demo.bat
 set "ROOT=%~dp0.."
 
@@ -15,7 +15,7 @@ start "farm-sim" powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File
 pushd "%ROOT%\src\dashboard"
 if errorlevel 1 exit /b %ERRORLEVEL%
 if not exist node_modules (
-  call npm install
+  call npm ci
   if errorlevel 1 (
     popd
     exit /b 1

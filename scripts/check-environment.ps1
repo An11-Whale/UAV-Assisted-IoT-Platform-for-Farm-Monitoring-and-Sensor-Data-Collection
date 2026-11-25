@@ -3,7 +3,9 @@
 Validates the JDK, Node.js and npm versions required by the integrated farm demo.
 #>
 [CmdletBinding()]
-param()
+param(
+    [switch]$SelfTest
+)
 
 $ErrorActionPreference = 'Stop'
 
@@ -91,7 +93,7 @@ function Find-CompatibleJdk {
     return $null
 }
 
-function Get-CommandMajorVersion {
+function Get-CommandVersion {
     param(
         [Parameter(Mandatory = $true)][string]$Command,
         [Parameter(Mandatory = $true)][string]$VersionArgument
@@ -104,17 +106,65 @@ function Get-CommandMajorVersion {
 
     try {
         $versionText = (& $resolved.Source $VersionArgument 2>&1 | Out-String).Trim()
-        if ($LASTEXITCODE -ne 0 -or $versionText -notmatch 'v?(?<major>\d+)') {
+        if ($LASTEXITCODE -ne 0 -or
+                $versionText -notmatch 'v?(?<major>\d+)(?:\.(?<minor>\d+))?(?:\.(?<patch>\d+))?') {
             return $null
         }
+        $major = [int]$Matches.major
+        $minor = if ($Matches.minor) { [int]$Matches.minor } else { 0 }
+        $patch = if ($Matches.patch) { [int]$Matches.patch } else { 0 }
         return [pscustomobject]@{
             Path = $resolved.Source
             Version = $versionText
-            Major = [int]$Matches.major
+            Major = $major
+            Minor = $minor
+            Patch = $patch
         }
     } catch {
         return $null
     }
+}
+
+function Test-CompatibleNodeVersion {
+    param(
+        [Parameter(Mandatory = $true)][int]$Major,
+        [Parameter(Mandatory = $true)][int]$Minor
+    )
+
+    # Vite 8 requires ^20.19.0 or >=22.12.0. The locked ESLint 10
+    # toolchain is slightly stricter: ^20.19.0, ^22.13.0 or >=24.
+    # Checking the intersection prevents a machine from being reported READY
+    # when the dashboard can start but its required lint step cannot run.
+    if ($Major -eq 20) { return $Minor -ge 19 }
+    if ($Major -eq 22) { return $Minor -ge 13 }
+    return $Major -ge 24
+}
+
+if ($SelfTest) {
+    $cases = @(
+        @{ Version = '20.18.0'; Expected = $false },
+        @{ Version = '20.19.0'; Expected = $true },
+        @{ Version = '21.7.3'; Expected = $false },
+        @{ Version = '22.12.0'; Expected = $false },
+        @{ Version = '22.13.0'; Expected = $true },
+        @{ Version = '23.11.1'; Expected = $false },
+        @{ Version = '24.0.0'; Expected = $true },
+        @{ Version = '25.1.0'; Expected = $true }
+    )
+    $failedCases = 0
+    foreach ($case in $cases) {
+        $parts = $case.Version.Split('.')
+        $actual = Test-CompatibleNodeVersion -Major ([int]$parts[0]) -Minor ([int]$parts[1])
+        if ($actual -ne $case.Expected) {
+            $failedCases++
+            Write-Host "[FAIL] Node.js $($case.Version): expected $($case.Expected), got $actual" -ForegroundColor Red
+        } else {
+            Write-Host "[PASS] Node.js $($case.Version) compatibility = $actual" -ForegroundColor Green
+        }
+    }
+    if ($failedCases -gt 0) { exit 1 }
+    Write-Host '[PASS] Node.js compatibility boundary tests.' -ForegroundColor Cyan
+    exit 0
 }
 
 $allReady = $true
@@ -128,22 +178,23 @@ if ($jdk) {
     Write-Host '       Neu IntelliJ da tai JDK, script cung tu dong tim trong %USERPROFILE%\.jdks.'
 }
 
-$node = Get-CommandMajorVersion -Command 'node.exe' -VersionArgument '--version'
-if ($node -and $node.Major -ge 20) {
+$node = Get-CommandVersion -Command 'node.exe' -VersionArgument '--version'
+if ($node -and (Test-CompatibleNodeVersion -Major $node.Major -Minor $node.Minor)) {
     Write-Host "[OK] Node.js $($node.Version): $($node.Path)" -ForegroundColor Green
 } else {
     $allReady = $false
     if ($node) {
-        Write-Host "[FAIL] Node.js $($node.Version) qua cu; can Node.js 20+." -ForegroundColor Red
+        Write-Host "[FAIL] Node.js $($node.Version) khong tuong thich voi Vite 8 + ESLint 10." -ForegroundColor Red
     } else {
-        Write-Host '[FAIL] Khong tim thay Node.js 20+.' -ForegroundColor Red
+        Write-Host '[FAIL] Khong tim thay Node.js.' -ForegroundColor Red
     }
+    Write-Host '       Can Node.js 20.19+, 22.13+ hoac 24+ (khong dung major 21/23).'
     Write-Host '       Cai bang: winget install --id OpenJS.NodeJS.LTS -e'
 }
 
-$npm = Get-CommandMajorVersion -Command 'npm.cmd' -VersionArgument '--version'
+$npm = Get-CommandVersion -Command 'npm.cmd' -VersionArgument '--version'
 if (-not $npm) {
-    $npm = Get-CommandMajorVersion -Command 'npm' -VersionArgument '--version'
+    $npm = Get-CommandVersion -Command 'npm' -VersionArgument '--version'
 }
 if ($npm) {
     Write-Host "[OK] npm $($npm.Version): $($npm.Path)" -ForegroundColor Green
