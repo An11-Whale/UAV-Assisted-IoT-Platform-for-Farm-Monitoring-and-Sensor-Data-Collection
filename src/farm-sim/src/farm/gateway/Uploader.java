@@ -70,13 +70,28 @@ public class Uploader {
                     SimClock simulationClock, ConnectivityMonitor connectivity,
                     RetryPolicy retryPolicy, Duration connectTimeout, Duration requestTimeout) {
         this(uri, gatewayId, store, deadLetters, simulationClock, connectivity, retryPolicy,
-                Clock.systemUTC(), requestTimeout,
+                Clock.systemUTC(), connectTimeout, requestTimeout);
+    }
+
+    /**
+     * Constructor cho phép truyền clock để kiểm thử backoff một cách xác định mà không cần sleep.
+     * Runtime thông thường nên dùng constructor phía trên với {@link Clock#systemUTC()}.
+     */
+    public Uploader(URI uri, String gatewayId, LocalStore store, LocalStore deadLetters,
+                    SimClock simulationClock, ConnectivityMonitor connectivity,
+                    RetryPolicy retryPolicy, Clock wallClock,
+                    Duration connectTimeout, Duration requestTimeout) {
+        this(uri, gatewayId, store, deadLetters, simulationClock, connectivity, retryPolicy,
+                wallClock, requestTimeout,
                 HttpClient.newBuilder().connectTimeout(requirePositive(connectTimeout, "connectTimeout")).build());
     }
 
-    Uploader(URI uri, String gatewayId, LocalStore store, LocalStore deadLetters,
-             SimClock simulationClock, ConnectivityMonitor connectivity, RetryPolicy retryPolicy,
-             Clock wallClock, Duration requestTimeout, HttpClient http) {
+    /**
+     * Constructor tiêm clock và HTTP client, dùng cho integration test xác định hoặc transport tùy biến.
+     */
+    public Uploader(URI uri, String gatewayId, LocalStore store, LocalStore deadLetters,
+                    SimClock simulationClock, ConnectivityMonitor connectivity, RetryPolicy retryPolicy,
+                    Clock wallClock, Duration requestTimeout, HttpClient http) {
         this.uri = validateUri(uri);
         if (gatewayId == null || gatewayId.isBlank())
             throw new IllegalArgumentException("gatewayId khong duoc rong");
