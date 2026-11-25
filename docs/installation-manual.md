@@ -15,6 +15,8 @@ Tài liệu này phục vụ **SCRUM-143 / F117 – Prepare Installation Manual*
 ```text
 UAV-IoT-Farm-integrated/
 ├── scripts/
+│   ├── check-environment.ps1
+│   ├── verify-installation.ps1
 │   ├── run-demo.bat
 │   └── run-demo.sh
 ├── src/
@@ -37,7 +39,7 @@ Các lệnh bên dưới giả định terminal đang ở thư mục `UAV-IoT-Fa
 | Thành phần | Phiên bản | Cách kiểm tra |
 |---|---:|---|
 | JDK | 17 trở lên | `java -version` và `javac -version` |
-| Node.js | 20 trở lên | `node --version` |
+| Node.js | `^20.19.0`, `^22.13.0` hoặc `>=24` | `node --version` |
 | npm | Đi kèm Node | `npm --version` |
 | Trình duyệt | Chrome, Edge hoặc Firefox | Mở dashboard local |
 | Port local | 8080 và 5173 mặc định | Không bị ứng dụng khác chiếm |
@@ -66,7 +68,13 @@ Get-ChildItem README.md, scripts, src
 .\scripts\check-environment.ps1
 ```
 
-Checker tìm JDK 17+ trong `JAVA_HOME`, `%USERPROFILE%\.jdks` và `PATH`, rồi kiểm tra Node 20+/npm. Vì vậy máy có Java 8 cũ trong `PATH` nhưng có JDK mới do IntelliJ tải vẫn chạy được. Nếu checker báo lỗi, dùng lệnh `winget` mà script in ra, mở terminal mới và chạy lại.
+Checker tìm JDK 17+ trong `JAVA_HOME`, `%USERPROFILE%\.jdks` và `PATH`, rồi kiểm tra Node/npm. Vite 8 cần Node `^20.19.0 || >=22.12.0`; ESLint 10 trong lockfile yêu cầu chặt hơn, nên toàn bộ dashboard dùng `^20.19.0 || ^22.13.0 || >=24`. Node 21 và 23 không được đánh dấu tương thích. Vì vậy máy có Java 8 cũ trong `PATH` nhưng có JDK mới do IntelliJ tải vẫn chạy được. Nếu checker báo lỗi, dùng lệnh `winget` mà script in ra, mở terminal mới và chạy lại.
+
+Có thể chạy bộ kiểm tra biên phiên bản Node mà không phụ thuộc phiên bản đang cài:
+
+```powershell
+.\scripts\check-environment.ps1 -SelfTest
+```
 
 ### Bước 3 – Chạy demo một lệnh
 
@@ -133,6 +141,33 @@ npm run build
 Build output được tạo trong `src/dashboard/dist`.
 
 ## 6. Xác minh hệ thống
+
+### Kiểm tra cài đặt tự động
+
+Từ repository root, chạy một lệnh sau. Mặc định script dùng `npm ci`, biên dịch toàn bộ Java, chạy core acceptance suite cùng ba kiểm thử riêng cho automatic retry, background timeout và SMTP loopback, rồi lint và production build dashboard:
+
+```powershell
+.\scripts\verify-installation.ps1
+```
+
+Kết quả đạt khi dòng cuối là `[PASS] Installation verification completed.`, core suite báo `RESULT: ... PASS, 0 FAIL`, và các test F52/F87/F93 đều in `[PASS]`. SMTP test chỉ mở server loopback `127.0.0.1` dùng một lần; nó không cần tài khoản, không dùng Internet và không gửi email tới người thật. Tùy chọn `-SkipNpmCi` chỉ dùng để kiểm tra nhanh lần sau trên checkout đã được xác minh; không dùng tùy chọn đó làm bằng chứng clean install.
+
+### Quy trình kiểm chứng trên clean checkout
+
+Người kiểm thử không dùng thư mục làm việc của tác giả. Tạo checkout mới và lưu log:
+
+```powershell
+git clone --branch quangluc/gateway --single-branch `
+  https://github.com/An11-Whale/UAV-Assisted-IoT-Platform-for-Farm-Monitoring-and-Sensor-Data-Collection.git `
+  uav-iot-install-check
+Set-Location .\uav-iot-install-check
+.\scripts\verify-installation.ps1 *>&1 |
+  Tee-Object -FilePath .\installation-verification.txt
+```
+
+Ghi vào Jira: hệ điều hành, `git rev-parse HEAD`, phiên bản JDK/Node/npm, file `installation-verification.txt` và PASS/FAIL của checklist cuối tài liệu. Không đưa secret hoặc file trong `src/farm-sim/data` vào bằng chứng.
+
+### Kiểm tra API khi demo đang chạy
 
 Mở PowerShell thứ ba:
 
@@ -362,7 +397,7 @@ Vite thường đề xuất port khác. Mở đúng URL Vite in ra; API base v�
 
 ### `npm ci` lỗi
 
-- Xác nhận Node 20+ và có `package-lock.json`.
+- Xác nhận Node thuộc một trong các dải `^20.19.0`, `^22.13.0`, `>=24` và có `package-lock.json`.
 - Không sửa `package-lock.json` thủ công.
 - Nếu lỗi tải package do proxy/network, cấu hình npm theo quy định mạng của nhóm rồi chạy lại.
 - Nếu gặp `EPERM/ENOTEMPTY` trong thư mục OneDrive, đóng Vite/VS Code đang giữ file; tạm dừng đồng bộ hoặc đặt checkout ngoài OneDrive, xóa **chỉ** `src/dashboard/node_modules`, rồi chạy lại `npm ci`. Không xóa source hay `package-lock.json`.
@@ -388,9 +423,9 @@ Không dùng `--reset-queue`; kiểm tra đang chạy đúng file config và `st
 
 ## 13. Checklist nghiệm thu cài đặt
 
-Nhờ một thành viên không viết module thực hiện trên checkout/máy sạch và ghi PASS/FAIL:
+Nhờ một thành viên không viết module thực hiện trên checkout/máy sạch bằng `scripts/verify-installation.ps1` và ghi PASS/FAIL:
 
-- [ ] JDK/Node/npm đúng version.
+- [ ] JDK/Node/npm đúng version; Node thuộc dải được hỗ trợ.
 - [ ] `build.bat` hoặc `build.sh` hoàn thành không lỗi.
 - [ ] `npm ci`, lint và build dashboard pass.
 - [ ] Health endpoint trả `UP`.
@@ -402,4 +437,4 @@ Nhờ một thành viên không viết module thực hiện trên checkout/máy 
 - [ ] Người kiểm thử dừng được tất cả process và hiểu cách đổi port.
 - [ ] Không có secret thật trong source/log.
 
-Chỉ chuyển SCRUM-143 sang `Done` sau khi checklist trên được một người khác thực hiện và bằng chứng được đính kèm ticket.
+Chỉ chuyển SCRUM-143 sang `Done` sau khi checklist trên được một người khác thực hiện và bằng chứng được đính kèm ticket. Tác giả có thể tự chạy script trước để sửa lỗi, nhưng lần chạy đó không thay thế bước xác nhận độc lập.

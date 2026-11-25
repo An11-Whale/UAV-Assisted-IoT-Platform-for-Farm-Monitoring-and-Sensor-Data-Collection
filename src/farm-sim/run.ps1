@@ -4,6 +4,9 @@ Builds when necessary, selects a compatible Java runtime and starts the farm sim
 #>
 [CmdletBinding(PositionalBinding = $false)]
 param(
+    [switch]$AcceptanceTests,
+    [ValidateSet('AutomaticRetryTest', 'AlertTimeoutMonitorTest', 'EmailIntegrationTest')]
+    [string]$TestClass,
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$AppArgs
 )
@@ -100,7 +103,14 @@ if (-not $java) {
     exit 1
 }
 
-$mainClass = Join-Path $PSScriptRoot 'out\farm\Main.class'
+$mainClassName = if ($TestClass) {
+    "farm.tests.$TestClass"
+} elseif ($AcceptanceTests) {
+    'farm.tests.TestRunner'
+} else {
+    'farm.Main'
+}
+$mainClass = Join-Path $PSScriptRoot (('out\' + $mainClassName.Replace('.', '\')) + '.class')
 if (-not (Test-Path -LiteralPath $mainClass -PathType Leaf)) {
     Write-Host '[INFO] Chua co ban build; dang bien dich truoc khi chay.' -ForegroundColor Yellow
     & (Join-Path $PSScriptRoot 'build.ps1')
@@ -111,8 +121,8 @@ if (-not (Test-Path -LiteralPath $mainClass -PathType Leaf)) {
 
 Push-Location $PSScriptRoot
 try {
-    Write-Host "[RUN] Java $($java.Major): $($java.JavaExe)"
-    & $java.JavaExe -cp (Join-Path $PSScriptRoot 'out') farm.Main @AppArgs
+    Write-Host "[RUN] Java $($java.Major): $($java.JavaExe) ($mainClassName)"
+    & $java.JavaExe -cp (Join-Path $PSScriptRoot 'out') $mainClassName @AppArgs
     $runExitCode = $LASTEXITCODE
 } finally {
     Pop-Location

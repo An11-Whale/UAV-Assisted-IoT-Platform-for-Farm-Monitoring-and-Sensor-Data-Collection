@@ -32,8 +32,8 @@ Linux/macOS dùng `build.sh` và `java -cp out farm.Main ...`. Cấu hình mặc
 | SCRUM-77 F51 | Connectivity Detection | gateway/ConnectivityMonitor (`UNKNOWN/ONLINE/DEGRADED/OFFLINE`) |
 | SCRUM-78 F52 | Automatic Retry | gateway/RetryPolicy + `Uploader.syncIfDue()` (backoff có max+jitter) |
 | SCRUM-112 F86 | Threshold Configuration | alert/AlertPolicy + `/api/v1/config/alert-rules` |
-| SCRUM-113..116 F87..F90 | Timeout, pin, bất thường, alert | alert/AlertEngine, AlertRepository; dedupe + audit + lifecycle |
-| SCRUM-119 F93 | Email Notifications | alert/EmailNotifier; SMTPS + durable outbox/retry |
+| SCRUM-113..116 F87..F90 | Timeout, pin, bất thường, alert | alert/AlertEngine, AlertTimeoutMonitor, AlertRepository; background check + dedupe + audit + lifecycle |
+| SCRUM-119 F93 | Email Notifications | alert/EmailNotifier; SMTP/SMTPS + durable outbox/retry + loopback integration test |
 | SCRUM-142 F116 | Gateway/Node Configuration | config/FarmConfig + `config/farm-sim.properties`; key random ngoài Git |
 
 ## Định dạng gói từ node (F40)
@@ -90,6 +90,12 @@ Khi có backend Spring Boot thật, gateway gửi tới `POST /api/ingest` (`--n
 ## Kiểm thử acceptance
 
     .\build.ps1
-    java -cp out farm.tests.TestRunner
+    .\run.ps1 -AcceptanceTests
+    .\run.ps1 -TestClass AutomaticRetryTest
+    .\run.ps1 -TestClass AlertTimeoutMonitorTest
+    .\run.ps1 -TestClass EmailIntegrationTest
 
-Kết quả chuẩn hiện tại: `7 PASS, 0 FAIL`. Bài E2E `--offline-first --missions 2 --tick-ms 0 --reset-queue` phải kết thúc với 12 record sync, queue 0 và connectivity `ONLINE`.
+Kết quả chuẩn hiện tại: core `7 PASS, 0 FAIL`; ba integration test F52/F87/F93 đều PASS.
+Từ thư mục gốc, `scripts\verify-installation.ps1` chạy toàn bộ kiểm tra cùng dashboard lint/build.
+Bài E2E `--offline-first --missions 2 --tick-ms 0 --reset-queue` phải kết thúc với 12 record
+sync, queue 0 và connectivity `ONLINE`.

@@ -37,7 +37,7 @@ and a mock ingestion server. The server also exposes the `/api/v1/sensors/...` e
 whole chain can be run end to end without the Spring Boot backend:
 
 ```bash
-sh scripts/run-demo.sh      # Windows: scripts\run-demo.bat   (needs JDK 17+ and Node 20+)
+sh scripts/run-demo.sh      # Windows: scripts\run-demo.bat   (JDK 17+; Node ^20.19, ^22.13 or >=24)
 # then open http://localhost:5173
 ```
 
@@ -51,9 +51,10 @@ thresholds, timeout/low-battery/anomaly detection, persistent alert/audit APIs, 
 - Installation and verification: [`docs/installation-manual.md`](docs/installation-manual.md)
 - Deployment diagram: [`docs/deployment/deployment-diagram.md`](docs/deployment/deployment-diagram.md)
 - Sensor–gateway protocol: [`docs/protocol/sensor-gateway-protocol.md`](docs/protocol/sensor-gateway-protocol.md)
+- Operator UI wireframe: [`docs/ui/operator-ui-wireframe.md`](docs/ui/operator-ui-wireframe.md)
 
-On Windows, run `scripts\check-environment.ps1`, then `src\farm-sim\build.ps1` and
-`java -cp src\farm-sim\out farm.tests.TestRunner`. Runtime secrets and queue/alert data live under
+On Windows, run `scripts\verify-installation.ps1` for the environment check, clean dependency
+install, Java acceptance/integration tests, dashboard lint and production build. Runtime secrets and queue/alert data live under
 `src/farm-sim/data/` and are intentionally excluded from Git.
 
 ---
