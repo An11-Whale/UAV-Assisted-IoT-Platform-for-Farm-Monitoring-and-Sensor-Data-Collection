@@ -1,3 +1,4 @@
+/** Searchable and sortable sensor directory used by the monitoring dashboard. */
 import { useState } from 'react';
 import type { SensorNode } from '../types/sensor';
 import { 
@@ -16,11 +17,13 @@ interface SensorTableProps {
   onSelectSensor: (sensor: SensorNode) => void;
 }
 
+type SortOrder = 'DEFAULT' | 'BATTERY_ASC' | 'NAME';
+
 export function SensorTable({ sensors, selectedSensorId, onSelectSensor }: SensorTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedZone, setSelectedZone] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
-  const [sortBy, setSortBy] = useState<'DEFAULT' | 'BATTERY_ASC' | 'NAME'>('DEFAULT');
+  const [sortBy, setSortBy] = useState<SortOrder>('DEFAULT');
 
   const filtered = sensors.filter(s => {
     const matchName = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -78,7 +81,7 @@ export function SensorTable({ sensors, selectedSensorId, onSelectSensor }: Senso
 
           <select
             value={sortBy}
-            onChange={e => setSortBy(e.target.value as any)}
+            onChange={e => setSortBy(e.target.value as SortOrder)}
             className="w-full border border-slate-200 px-2 py-1 rounded-md text-[11px] bg-white text-slate-700 hover:border-slate-300 focus:outline-none"
           >
             <option value="DEFAULT">Sắp xếp: Mặc định</option>

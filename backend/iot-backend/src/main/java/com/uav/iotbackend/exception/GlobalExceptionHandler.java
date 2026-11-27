@@ -47,4 +47,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of(
                 "error", "JSON sai định dạng (kiểm tra dấu phẩy, kiểu dữ liệu, measuredAt dạng 2026-10-28T08:30:00+07:00)"));
     }
+    // 401: sai thông tin đăng nhập
+@ExceptionHandler(UnauthorizedException.class)
+public ResponseEntity<Map<String, Object>> handleUnauthorized(UnauthorizedException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", ex.getMessage()));
+}
 }
