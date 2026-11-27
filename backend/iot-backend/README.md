@@ -3,7 +3,7 @@
 API nhận dữ liệu cảm biến từ Gateway, kiểm tra hợp lệ, chống trùng và lưu vào MySQL.
 
 ## Yêu cầu
-JDK 21+ (đã thử với JDK 25), MySQL 8 (đã chạy `backend/database/schema.sql`)
+JDK 25+ (LTS), MySQL 8 (đã chạy `backend/database/schema.sql`)
 
 ## Cách chạy
 1. Tạo file `src/main/resources/application-local.properties` (file này không đưa lên GitHub):
